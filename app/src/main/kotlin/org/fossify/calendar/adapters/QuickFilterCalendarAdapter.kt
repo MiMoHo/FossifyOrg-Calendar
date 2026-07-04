@@ -110,25 +110,35 @@ class QuickFilterCalendarAdapter(
                 }
 
                 quickFilterCalendar.setOnLongClickListener {
-                    if (lastLongClickedType != calendar) {
+                    val isCurrentlySoloed =
+                        activeKeys.size == 1 && activeKeys.contains(calendar.id!!)
+
+                    // when the long-pressed type is already the only visible one, restore
+                    // the previously visible types (or show all if there's nothing to restore),
+                    // otherwise "solo" the long-pressed type and remember the current state
+                    val restoreKeys = when {
+                        !isCurrentlySoloed -> null
+                        lastLongClickedType == calendar && lastActiveKeys.isNotEmpty() ->
+                            lastActiveKeys
+                        else -> allCalendars.mapNotNull { it.id }.toHashSet()
+                    }
+
+                    if (restoreKeys != null) {
+                        allCalendars.forEach {
+                            viewClicked(select = restoreKeys.contains(it.id!!), calendar = it)
+                        }
+                        lastLongClickedType = null
                         lastActiveKeys.clear()
-                    }
-                    val activeKeysCopy = HashSet(activeKeys)
-                    allCalendars.forEach {
-                        viewClicked(select = lastActiveKeys.contains(it.id!!), calendar = it)
-                    }
-
-                    val shouldSelectCurrent = if (lastLongClickedType != calendar) {
-                        true
                     } else {
-                        lastActiveKeys.contains(calendar.id!!)
+                        lastActiveKeys = HashSet(activeKeys)
+                        allCalendars.forEach {
+                            viewClicked(select = it.id == calendar.id, calendar = it)
+                        }
+                        lastLongClickedType = calendar
                     }
 
-                    viewClicked(shouldSelectCurrent, calendar)
                     notifyItemRangeChanged(0, itemCount)
                     callback()
-                    lastLongClickedType = calendar
-                    lastActiveKeys = activeKeysCopy
                     true
                 }
             }
