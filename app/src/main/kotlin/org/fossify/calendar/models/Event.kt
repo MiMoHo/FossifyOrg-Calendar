@@ -75,38 +75,46 @@ data class Event(
 
     fun addIntervalTime(original: Event) {
         val oldStart = Formatter.getDateTimeFromTS(startTS)
-        val newStart = when (repeatInterval) {
-            DAY -> oldStart.plusDays(1)
-            else -> {
-                when {
-                    repeatInterval % YEAR == 0 -> when (repeatRule) {
-                        REPEAT_ORDER_WEEKDAY -> addXthDayInterval(oldStart, original, false)
-                        REPEAT_ORDER_WEEKDAY_USE_LAST -> addXthDayInterval(oldStart, original, true)
-                        else -> addYearsWithSameDay(oldStart)
-                    }
-
-                    repeatInterval % MONTH == 0 -> when (repeatRule) {
-                        REPEAT_SAME_DAY -> addMonthsWithSameDay(oldStart, original)
-                        REPEAT_ORDER_WEEKDAY -> addXthDayInterval(oldStart, original, false)
-                        REPEAT_ORDER_WEEKDAY_USE_LAST -> addXthDayInterval(oldStart, original, true)
-                        else -> oldStart.plusMonths(repeatInterval / MONTH).dayOfMonth()
-                            .withMaximumValue()
-                    }
-
-                    repeatInterval % WEEK == 0 -> {
-                        // step through weekly repetition by days too, as events can trigger multiple times a week
-                        oldStart.plusDays(1)
-                    }
-
-                    else -> oldStart.plusSeconds(repeatInterval)
-                }
-            }
+        val newStart = if (repeatInterval == DAY) {
+            oldStart.plusDays(1)
+        } else {
+            getNextStart(oldStart, original)
         }
 
         val newStartTS = newStart.seconds()
         val newEndTS = newStartTS + (endTS - startTS)
         startTS = newStartTS
         endTS = newEndTS
+    }
+
+    private fun getNextStart(oldStart: DateTime, original: Event): DateTime = when {
+        repeatInterval % YEAR == 0 -> when (repeatRule) {
+            REPEAT_ORDER_WEEKDAY -> addXthDayInterval(oldStart, original, false)
+            REPEAT_ORDER_WEEKDAY_USE_LAST -> addXthDayInterval(oldStart, original, true)
+            else -> addYearsWithSameDay(oldStart)
+        }
+
+        repeatInterval % MONTH == 0 -> when (repeatRule) {
+            REPEAT_SAME_DAY -> addMonthsWithSameDay(oldStart, original)
+            REPEAT_ORDER_WEEKDAY -> addXthDayInterval(oldStart, original, false)
+            REPEAT_ORDER_WEEKDAY_USE_LAST -> addXthDayInterval(oldStart, original, true)
+            else -> oldStart.plusMonths(repeatInterval / MONTH).dayOfMonth()
+                .withMaximumValue()
+        }
+
+        repeatInterval % WEEK == 0 -> {
+            // step through weekly repetition by days too, as events can trigger multiple times a week
+            oldStart.plusDays(1)
+        }
+
+        // Custom day-based intervals (e.g. every N days) must be advanced by whole
+        // calendar days rather than a fixed number of seconds. Adding seconds shifts the
+        // instant by a fixed physical duration, so when an occurrence falls in a different
+        // DST period than the original, an all-day event's midnight start slips to 23:00 of
+        // the previous day and ends up spanning two consecutive days (see #568).
+        repeatInterval % DAY == 0 -> oldStart.plusDays(repeatInterval / DAY)
+
+        else -> oldStart.plusSeconds(repeatInterval)
     }
 
     // if an event should happen on 29th Feb. with Same Day yearly repetition, show it only on leap years
