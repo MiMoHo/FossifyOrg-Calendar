@@ -304,6 +304,10 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         if (config.caldavSync) {
             updateCalDAVEvents()
         }
+
+        if (binding.mainMenu.isSearchOpen) {
+            searchQueryChanged(binding.mainMenu.getCurrentQuery())
+        }
     }
 
     override fun onPause() {

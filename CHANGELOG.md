@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed event text readability on colored backgrounds ([#1065])
 - Fixed invisible current time indicator in weekly view ([#99])
 - Fixed stuck zoom level in weekly view on some devices ([#621])
+- Fixed search results not refreshing after adding, editing, or duplicating an event ([#340])
 
 ## [1.10.3] - 2026-02-14
 ### Changed
@@ -221,6 +222,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#217]: https://github.com/FossifyOrg/Calendar/issues/217
 [#262]: https://github.com/FossifyOrg/Calendar/issues/262
 [#337]: https://github.com/FossifyOrg/Calendar/issues/337
+[#340]: https://github.com/FossifyOrg/Calendar/issues/340
 [#393]: https://github.com/FossifyOrg/Calendar/issues/393
 [#394]: https://github.com/FossifyOrg/Calendar/issues/394
 [#406]: https://github.com/FossifyOrg/Calendar/issues/406
