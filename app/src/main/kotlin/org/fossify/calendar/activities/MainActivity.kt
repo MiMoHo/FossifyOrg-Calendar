@@ -905,15 +905,18 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
 
         val dateFormats = getDateFormats()
         val yearDateFormats = getDateFormatsWithYear()
-        val existingEvents = if (birthdays) eventsDB.getBirthdays() else eventsDB.getAnniversaries()
+        val calendarId =
+            if (birthdays) eventsHelper.getLocalBirthdaysCalendarId() else eventsHelper.getAnniversariesCalendarId()
+        val source = if (birthdays) SOURCE_CONTACT_BIRTHDAY else SOURCE_CONTACT_ANNIVERSARY
+
+        // Match existing entries by calendar rather than source. Editing an imported birthday
+        // (e.g. adding a reminder) changes its source to "simple-calendar"; matching by source
+        // would miss it and re-import a duplicate on the next launch. See issue #415.
+        val existingEvents = eventsDB.getAllEventsWithCalendarIds(listOf(calendarId))
         val importIDs = HashMap<String, Long>()
         existingEvents.forEach {
             importIDs[it.importId] = it.startTS
         }
-
-        val calendarId =
-            if (birthdays) eventsHelper.getLocalBirthdaysCalendarId() else eventsHelper.getAnniversariesCalendarId()
-        val source = if (birthdays) SOURCE_CONTACT_BIRTHDAY else SOURCE_CONTACT_ANNIVERSARY
 
         queryCursor(
             uri = uri,
@@ -1009,8 +1012,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                 if (birthdays) eventsHelper.getLocalBirthdaysCalendarId() else eventsHelper.getAnniversariesCalendarId()
             val source = if (birthdays) SOURCE_CONTACT_BIRTHDAY else SOURCE_CONTACT_ANNIVERSARY
 
-            val existingEvents =
-                if (birthdays) eventsDB.getBirthdays() else eventsDB.getAnniversaries()
+            val existingEvents = eventsDB.getAllEventsWithCalendarIds(listOf(calendarId))
             val importIDs = HashMap<String, Long>()
             existingEvents.forEach {
                 importIDs[it.importId] = it.startTS

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed event text readability on colored backgrounds ([#1065])
 - Fixed invisible current time indicator in weekly view ([#99])
 - Fixed stuck zoom level in weekly view on some devices ([#621])
+- Fixed imported contact birthdays/anniversaries being duplicated after editing them (e.g. adding a reminder) ([#415])
 
 ## [1.10.3] - 2026-02-14
 ### Changed
@@ -224,6 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#393]: https://github.com/FossifyOrg/Calendar/issues/393
 [#394]: https://github.com/FossifyOrg/Calendar/issues/394
 [#406]: https://github.com/FossifyOrg/Calendar/issues/406
+[#415]: https://github.com/FossifyOrg/Calendar/issues/415
 [#484]: https://github.com/FossifyOrg/Calendar/issues/484
 [#486]: https://github.com/FossifyOrg/Calendar/issues/486
 [#550]: https://github.com/FossifyOrg/Calendar/issues/550
