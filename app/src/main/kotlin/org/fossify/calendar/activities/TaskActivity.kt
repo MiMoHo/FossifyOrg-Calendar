@@ -407,14 +407,12 @@ class TaskActivity : SimpleActivity() {
         taskRepetitionLimitHolder.setOnClickListener { showRepetitionTypePicker() }
 
         taskReminder1.setOnClickListener {
-            handleNotificationAvailability {
-                if (config.wasAlarmWarningShown) {
+            if (config.wasAlarmWarningShown) {
+                showReminder1Dialog()
+            } else {
+                ReminderWarningDialog(this@TaskActivity) {
+                    config.wasAlarmWarningShown = true
                     showReminder1Dialog()
-                } else {
-                    ReminderWarningDialog(this@TaskActivity) {
-                        config.wasAlarmWarningShown = true
-                        showReminder1Dialog()
-                    }
                 }
             }
         }
@@ -888,6 +886,9 @@ class TaskActivity : SimpleActivity() {
         showPickSecondsDialogHelper(mReminder1Minutes, showDuringDayOption = mIsAllDayTask) {
             mReminder1Minutes = if (it == -1 || it == 0) it else it / 60
             updateReminderTexts()
+            if (mReminder1Minutes != REMINDER_OFF) {
+                handleNotificationAvailability { }
+            }
         }
     }
 

@@ -492,14 +492,12 @@ class EventActivity : SimpleActivity() {
         eventRepetitionLimitHolder.setOnClickListener { showRepetitionTypePicker() }
 
         eventReminder1.setOnClickListener {
-            handleNotificationAvailability {
-                if (config.wasAlarmWarningShown) {
+            if (config.wasAlarmWarningShown) {
+                showReminder1Dialog()
+            } else {
+                ReminderWarningDialog(this@EventActivity) {
+                    config.wasAlarmWarningShown = true
                     showReminder1Dialog()
-                } else {
-                    ReminderWarningDialog(this@EventActivity) {
-                        config.wasAlarmWarningShown = true
-                        showReminder1Dialog()
-                    }
                 }
             }
         }
@@ -847,6 +845,9 @@ class EventActivity : SimpleActivity() {
         showPickSecondsDialogHelper(mReminder1Minutes, showDuringDayOption = mIsAllDayEvent) {
             mReminder1Minutes = if (it == -1 || it == 0) it else it / 60
             checkReminderTexts()
+            if (mReminder1Minutes != REMINDER_OFF) {
+                handleNotificationAvailability { }
+            }
         }
     }
 
