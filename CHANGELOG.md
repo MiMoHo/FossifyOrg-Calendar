@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed event text readability on colored backgrounds ([#1065])
+- Fixed short events near midnight (e.g. 23:59) being clipped to an unreadable sliver in the week view ([#126])
 - Fixed invisible current time indicator in weekly view ([#99])
 - Fixed stuck zoom level in weekly view on some devices ([#621])
 
@@ -214,6 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#49]: https://github.com/FossifyOrg/Calendar/issues/49
 [#99]: https://github.com/FossifyOrg/Calendar/issues/99
 [#103]: https://github.com/FossifyOrg/Calendar/issues/103
+[#126]: https://github.com/FossifyOrg/Calendar/issues/126
 [#135]: https://github.com/FossifyOrg/Calendar/issues/135
 [#138]: https://github.com/FossifyOrg/Calendar/issues/138
 [#148]: https://github.com/FossifyOrg/Calendar/issues/148

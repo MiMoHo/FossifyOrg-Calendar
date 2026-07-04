@@ -77,6 +77,7 @@ import org.fossify.commons.extensions.realScreenSize
 import org.fossify.commons.extensions.removeBit
 import org.fossify.commons.extensions.toInt
 import org.fossify.commons.extensions.usableScreenSize
+import org.fossify.commons.helpers.DAY_MINUTES
 import org.fossify.commons.helpers.HIGHER_ALPHA
 import org.fossify.commons.helpers.LOWER_ALPHA
 import org.fossify.commons.helpers.MEDIUM_ALPHA
@@ -649,12 +650,21 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                     else -> 1440
                 }
 
+                var startMinutesAdjusted = startMinutes
                 var endMinutes = startMinutes + duration
                 if ((endMinutes - startMinutes) * minuteHeight < minimalHeight) {
-                    endMinutes = startMinutes + (minimalHeight / minuteHeight).toInt()
+                    val minimalHeightMinutes = (minimalHeight / minuteHeight).toInt()
+                    endMinutes = startMinutes + minimalHeightMinutes
+                    // enforcing the minimal height by extending the event downwards pushes
+                    // short events near midnight past the end of the day, where they get
+                    // clipped and become unreadable. Anchor them to the bottom instead (#126).
+                    if (endMinutes > DAY_MINUTES) {
+                        endMinutes = DAY_MINUTES
+                        startMinutesAdjusted = max(0, DAY_MINUTES - minimalHeightMinutes)
+                    }
                 }
 
-                val range = Range(startMinutes, endMinutes)
+                val range = Range(startMinutesAdjusted, endMinutes)
                 val eventWeekly = EventWeeklyView(range)
 
                 if (!eventTimeRanges.containsKey(currentDayCode)) {
