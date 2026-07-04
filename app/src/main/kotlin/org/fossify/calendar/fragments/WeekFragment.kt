@@ -590,7 +590,19 @@ class WeekFragment : Fragment(), WeeklyCalendar {
             if (context != null && activity != null && isAdded) {
                 val replaceDescription = config.replaceDescription
                 val sorted = events.sortedWith(
-                    compareBy<Event> { it.startTS }.thenBy { it.endTS }.thenBy { it.title }
+                    compareBy<Event> {
+                        if (it.getIsAllDay()) {
+                            Formatter.getDayStartTS(Formatter.getDayCodeFromTS(it.startTS)) - 1
+                        } else {
+                            it.startTS
+                        }
+                    }.thenBy {
+                        if (it.getIsAllDay()) {
+                            Formatter.getDayEndTS(Formatter.getDayCodeFromTS(it.endTS))
+                        } else {
+                            it.endTS
+                        }
+                    }.thenBy { it.title }
                         .thenBy { if (replaceDescription) it.location else it.description }
                 ).toMutableList() as ArrayList<Event>
 

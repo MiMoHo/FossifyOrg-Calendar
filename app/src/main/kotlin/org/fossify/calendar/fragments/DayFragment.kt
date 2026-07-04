@@ -100,9 +100,21 @@ class DayFragment : Fragment() {
         lastHash = newHash
 
         val replaceDescription = requireContext().config.replaceDescription
-        val sorted = ArrayList(events.sortedWith(compareBy({ !it.getIsAllDay() }, { it.startTS }, { it.endTS }, { it.title }, {
+        val sorted = ArrayList(events.sortedWith(compareBy<Event> {
+            if (it.getIsAllDay()) {
+                Formatter.getDayStartTS(Formatter.getDayCodeFromTS(it.startTS)) - 1
+            } else {
+                it.startTS
+            }
+        }.thenBy {
+            if (it.getIsAllDay()) {
+                Formatter.getDayEndTS(Formatter.getDayCodeFromTS(it.endTS))
+            } else {
+                it.endTS
+            }
+        }.thenBy { it.title }.thenBy {
             if (replaceDescription) it.location else it.description
-        })))
+        }))
 
         activity?.runOnUiThread {
             updateEvents(sorted)
