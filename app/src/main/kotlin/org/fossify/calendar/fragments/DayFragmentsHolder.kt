@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager
 import org.fossify.calendar.activities.MainActivity
 import org.fossify.calendar.adapters.MyDayPagerAdapter
 import org.fossify.calendar.databinding.FragmentDaysHolderBinding
+import org.fossify.calendar.helpers.CURRENT_DAY_CODE
 import org.fossify.calendar.helpers.DAILY_VIEW
 import org.fossify.calendar.helpers.DAY_CODE
 import org.fossify.calendar.helpers.Formatter
@@ -33,8 +34,14 @@ class DayFragmentsHolder : MyFragmentHolder(), NavigationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentDayCode = arguments?.getString(DAY_CODE) ?: ""
+        currentDayCode = savedInstanceState?.getString(CURRENT_DAY_CODE)
+            ?: arguments?.getString(DAY_CODE) ?: ""
         todayDayCode = Formatter.getTodayCode()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(CURRENT_DAY_CODE, currentDayCode)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

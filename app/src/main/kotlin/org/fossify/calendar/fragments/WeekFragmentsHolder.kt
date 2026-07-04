@@ -16,6 +16,7 @@ import org.fossify.calendar.adapters.MyWeekPagerAdapter
 import org.fossify.calendar.databinding.FragmentWeekHolderBinding
 import org.fossify.calendar.databinding.WeeklyViewHourTextviewBinding
 import org.fossify.calendar.extensions.*
+import org.fossify.calendar.helpers.CURRENT_WEEK_TS
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.WEEKLY_VIEW
 import org.fossify.calendar.helpers.WEEK_START_DATE_TIME
@@ -42,9 +43,19 @@ class WeekFragmentsHolder : MyFragmentHolder(), WeekFragmentListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dateTimeString = arguments?.getString(WEEK_START_DATE_TIME) ?: return
-        currentWeekTS = (DateTime.parse(dateTimeString) ?: DateTime()).seconds()
         updateThisWeekTS()
+        val savedWeekTS = savedInstanceState?.getLong(CURRENT_WEEK_TS, 0L) ?: 0L
+        currentWeekTS = if (savedWeekTS != 0L) {
+            savedWeekTS
+        } else {
+            val dateTimeString = arguments?.getString(WEEK_START_DATE_TIME) ?: return
+            (DateTime.parse(dateTimeString) ?: DateTime()).seconds()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(CURRENT_WEEK_TS, currentWeekTS)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

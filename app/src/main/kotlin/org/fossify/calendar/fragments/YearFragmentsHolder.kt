@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager
 import org.fossify.calendar.activities.MainActivity
 import org.fossify.calendar.adapters.MyYearPagerAdapter
 import org.fossify.calendar.databinding.FragmentYearsHolderBinding
+import org.fossify.calendar.helpers.CURRENT_YEAR
 import org.fossify.calendar.helpers.Formatter
 import org.fossify.calendar.helpers.YEARLY_VIEW
 import org.fossify.calendar.helpers.YEAR_TO_OPEN
@@ -35,9 +36,20 @@ class YearFragmentsHolder : MyFragmentHolder(), NavigationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val dateTimeString = arguments?.getString(YEAR_TO_OPEN)
-        currentYear = (if (dateTimeString != null) DateTime.parse(dateTimeString) else DateTime()).toString(Formatter.YEAR_PATTERN).toInt()
+        val savedYear = savedInstanceState?.getInt(CURRENT_YEAR, 0) ?: 0
+        currentYear = if (savedYear != 0) {
+            savedYear
+        } else {
+            val dateTimeString = arguments?.getString(YEAR_TO_OPEN)
+            val dateTime = if (dateTimeString != null) DateTime.parse(dateTimeString) else DateTime()
+            dateTime.toString(Formatter.YEAR_PATTERN).toInt()
+        }
         todayYear = DateTime().toString(Formatter.YEAR_PATTERN).toInt()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(CURRENT_YEAR, currentYear)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
