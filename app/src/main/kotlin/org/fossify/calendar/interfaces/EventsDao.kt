@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import org.fossify.calendar.helpers.LOCAL_CALENDAR_ID
 import org.fossify.calendar.helpers.SOURCE_CONTACT_ANNIVERSARY
 import org.fossify.calendar.helpers.SOURCE_CONTACT_BIRTHDAY
@@ -150,6 +151,12 @@ interface EventsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdate(event: Event): Long
+
+    // Use a real UPDATE (WHERE id = ?) for existing rows. INSERT OR REPLACE performs
+    // DELETE + INSERT, which triggers ON DELETE CASCADE on the `tasks` table and wipes
+    // per-occurrence task completion records (see issue #509).
+    @Update
+    fun update(event: Event)
 
     @Query("DELETE FROM events WHERE id IN (:ids)")
     fun deleteEvents(ids: List<Long>)

@@ -205,7 +205,11 @@ class EventsHelper(val context: Context) {
         updateWidgets: Boolean = true,
         callback: (() -> Unit)? = null
     ) {
-        eventsDB.insertOrUpdate(event)
+        if (event.id == null) {
+            event.id = eventsDB.insertOrUpdate(event)
+        } else {
+            eventsDB.update(event)
+        }
         ensureCalendarVisibility(event, enableCalendar)
         if (updateWidgets) context.updateWidgets()
         context.scheduleNextEventReminder(event, showToasts)
