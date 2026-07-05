@@ -510,6 +510,21 @@ fun Context.getUsageAttributeForStreamType(): Int {
     }
 }
 
+// reminder notification channels are created per calendar (event type) with an id ending in
+// "_<calendarId>". When a calendar is deleted its channels must be removed too, otherwise they
+// linger as orphaned/duplicate notification categories in the system settings (see #548).
+fun Context.deleteCalendarNotificationChannels(calendarIds: List<Long>) {
+    if (calendarIds.isEmpty()) {
+        return
+    }
+
+    val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val idsToDelete = calendarIds.mapTo(HashSet()) { it.toString() }
+    notificationManager.notificationChannels
+        .filter { it.id.startsWith("simple_calendar_") && it.id.substringAfterLast('_') in idsToDelete }
+        .forEach { notificationManager.deleteNotificationChannel(it.id) }
+}
+
 @SuppressLint("NewApi")
 fun Context.getNotification(
     pendingIntent: PendingIntent,

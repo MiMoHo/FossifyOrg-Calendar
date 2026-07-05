@@ -12,6 +12,7 @@ import org.fossify.calendar.extensions.cancelNotification
 import org.fossify.calendar.extensions.cancelPendingIntent
 import org.fossify.calendar.extensions.completedTasksDB
 import org.fossify.calendar.extensions.config
+import org.fossify.calendar.extensions.deleteCalendarNotificationChannels
 import org.fossify.calendar.extensions.eventsDB
 import org.fossify.calendar.extensions.isTsOnProperDay
 import org.fossify.calendar.extensions.isXWeeklyRepetition
@@ -132,6 +133,7 @@ class EventsHelper(val context: Context) {
         }
 
         calendarsDB.deleteCalendars(typesToDelete)
+        context.deleteCalendarNotificationChannels(typesToDelete.mapNotNull { it.id })
 
         if (getCalendarsSync().size == 1) {
             config.quickFilterCalendars = HashSet()
