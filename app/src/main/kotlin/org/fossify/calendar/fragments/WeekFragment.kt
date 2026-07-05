@@ -131,7 +131,7 @@ class WeekFragment : Fragment(), WeeklyCalendar {
     private var currEvents = ArrayList<Event>()
     private var dayColumns = ArrayList<RelativeLayout>()
     private var calendarColors = LongSparseArray<Int>()
-    private var eventTimeRanges = LinkedHashMap<String, LinkedHashMap<Long, EventWeeklyView>>()
+    private var eventTimeRanges = LinkedHashMap<String, LinkedHashMap<String, EventWeeklyView>>()
     private var currentlyDraggedView: View? = null
 
     private lateinit var binding: FragmentWeekBinding
@@ -660,7 +660,7 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                 if (!eventTimeRanges.containsKey(currentDayCode)) {
                     eventTimeRanges[currentDayCode] = LinkedHashMap()
                 }
-                eventTimeRanges[currentDayCode]?.put(event.id!!, eventWeekly)
+                eventTimeRanges[currentDayCode]?.put("${event.id}_${event.startTS}", eventWeekly)
 
                 currentDateTime = currentDateTime.plusDays(1)
                 currentDayCode = Formatter.getDayCodeFromDateTime(currentDateTime)
@@ -668,7 +668,7 @@ class WeekFragment : Fragment(), WeeklyCalendar {
         }
 
         for ((_, eventDayList) in eventTimeRanges) {
-            val eventsCollisionChecked = ArrayList<Long>()
+            val eventsCollisionChecked = ArrayList<String>()
             for ((eventId, eventWeeklyView) in eventDayList) {
                 if (eventWeeklyView.slot == 0) {
                     eventWeeklyView.slot = 1
@@ -764,7 +764,7 @@ class WeekFragment : Fragment(), WeeklyCalendar {
                             event.color
                         }
                         var textColor = backgroundColor.getContrastColor()
-                        val currentEventWeeklyView = eventTimeRanges[currentDayCode]!![event.id]
+                        val currentEventWeeklyView = eventTimeRanges[currentDayCode]!!["${event.id}_${event.startTS}"]
 
                         val adjustAlpha = if (event.isTask()) {
                             dimCompletedTasks && event.isTaskCompleted()
