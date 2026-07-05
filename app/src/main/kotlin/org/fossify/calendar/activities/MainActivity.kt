@@ -840,7 +840,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                     ) {
                         if (it > 0) {
                             toast(R.string.birthdays_added)
-                            updateViewPager()
+                            refreshViewPager()
                             setupQuickFilter()
                         }
                     }
@@ -861,7 +861,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                     ) {
                         if (it > 0) {
                             toast(R.string.anniversaries_added)
-                            updateViewPager()
+                            refreshViewPager()
                             setupQuickFilter()
                         }
                     }
