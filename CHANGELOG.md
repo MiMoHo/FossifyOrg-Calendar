@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed event text readability on colored backgrounds ([#1065])
 - Fixed invisible current time indicator in weekly view ([#99])
 - Fixed stuck zoom level in weekly view on some devices ([#621])
+- Fixed task edit screen opened from a notification showing outdated date/time after the task was edited in the app ([#891])
 
 ## [1.10.3] - 2026-02-14
 ### Changed
@@ -247,6 +248,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#826]: https://github.com/FossifyOrg/Calendar/issues/826
 [#870]: https://github.com/FossifyOrg/Calendar/issues/870
 [#889]: https://github.com/FossifyOrg/Calendar/issues/889
+[#891]: https://github.com/FossifyOrg/Calendar/issues/891
 [#917]: https://github.com/FossifyOrg/Calendar/issues/917
 [#1003]: https://github.com/FossifyOrg/Calendar/issues/1003
 [#1019]: https://github.com/FossifyOrg/Calendar/issues/1019

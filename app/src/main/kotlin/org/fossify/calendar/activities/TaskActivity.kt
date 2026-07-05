@@ -17,6 +17,7 @@ import org.fossify.calendar.dialogs.RepeatLimitTypePickerDialog
 import org.fossify.calendar.dialogs.RepeatRuleWeeklyDialog
 import org.fossify.calendar.dialogs.SelectCalendarDialog
 import org.fossify.calendar.extensions.calendarsDB
+import org.fossify.calendar.extensions.cancelNotification
 import org.fossify.calendar.extensions.config
 import org.fossify.calendar.extensions.eventsDB
 import org.fossify.calendar.extensions.eventsHelper
@@ -363,6 +364,10 @@ class TaskActivity : SimpleActivity() {
         if (intent.getBooleanExtra(IS_DUPLICATE_INTENT, false)) {
             mTask.id = null
             binding.taskToolbar.title = getString(R.string.new_task)
+        } else {
+            // mirror EventActivity: dismiss a still-shown task notification when it is
+            // opened for editing, so a later edit cannot leave a stale notification behind
+            cancelNotification(mTask.id!!)
         }
     }
 
@@ -426,7 +431,16 @@ class TaskActivity : SimpleActivity() {
 
     private fun setupEditTask() {
         mIsNewTask = false
-        val realStart = if (mTaskOccurrenceTS == 0L) mTask.startTS else mTaskOccurrenceTS
+        // For non-repeating tasks the single occurrence is always mTask.startTS. The
+        // occurrence TS carried by an already-shown notification can be stale if the task
+        // was edited (e.g. postponed) in the app afterwards, so ignore it here and trust
+        // the freshly re-fetched DB value. Repeating tasks still need the occurrence TS to
+        // identify which instance was tapped.
+        val realStart = if (mTaskOccurrenceTS == 0L || mTask.repeatInterval == 0) {
+            mTask.startTS
+        } else {
+            mTaskOccurrenceTS
+        }
         mOriginalStartTS = realStart
         mTaskDateTime = Formatter.getDateTimeFromTS(realStart)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
