@@ -78,23 +78,30 @@ class SmallMonthView(context: Context, attrs: AttributeSet, defStyle: Int) : Vie
         super.onDraw(canvas)
 
         if (dayWidth == 0f) {
-            dayWidth = if (isLandscape) {
+            val horizontalDayWidth = if (isLandscape) {
                 width / 9f
             } else {
                 width / 7f
             }
+            // also constrain by height so all 6 week rows fit and the last
+            // days of the month aren't clipped (landscape / near-square screens)
+            dayWidth = minOf(horizontalDayWidth, height / ROW_COUNT.toFloat())
         }
 
         val fm = paint.fontMetrics
         val radius = dayWidth * 0.41f
 
+        // center the 7x6 grid within the available space
+        val offsetX = (width - COLUMN_COUNT * dayWidth) / 2
+        val offsetY = (height - ROW_COUNT * dayWidth) / 2
+
         var curId = 1 - firstDay
-        for (y in 1..6) {
-            for (x in 1..7) {
+        for (y in 1..ROW_COUNT) {
+            for (x in 1..COLUMN_COUNT) {
                 if (curId in 1..days) {
                     val textPaint = getPaint(curId, x, highlightWeekends)
-                    val centerX = x * dayWidth - dayWidth / 2
-                    val centerY = y * dayWidth - dayWidth / 2
+                    val centerX = offsetX + x * dayWidth - dayWidth / 2
+                    val centerY = offsetY + y * dayWidth - dayWidth / 2
                     val baselineY = centerY - (fm.ascent + fm.descent) / 2
 
                     canvas.drawText(curId.toString(), centerX, baselineY, textPaint)
@@ -132,5 +139,10 @@ class SmallMonthView(context: Context, attrs: AttributeSet, defStyle: Int) : Vie
 
         paint.color = textColor
         invalidate()
+    }
+
+    companion object {
+        private const val COLUMN_COUNT = 7
+        private const val ROW_COUNT = 6
     }
 }
